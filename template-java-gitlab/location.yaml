@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: java-gitlab-jenkins-template-location
+  description: Registers the Java GitLab Jenkins template location
+spec:
+  type: url
+  target: ./template.yaml
+  rules:
+    - allow: [Template]

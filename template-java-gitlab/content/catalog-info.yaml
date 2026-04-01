@@ -4,8 +4,8 @@ metadata:
   name: ${{ values.componentName | lower }}
   description: ${{ values.description }}
   annotations:
-    jenkins.io/job-full-name: ${{ values.componentName | lower }}
+    jenkins.io/job-full-name: ${{ values.jenkinsJobFullName }}
 spec:
   type: service
   lifecycle: experimental
-  owner: user:guest
+  owner: ${{ values.owner }}

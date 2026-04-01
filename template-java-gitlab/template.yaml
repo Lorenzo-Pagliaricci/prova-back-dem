@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: java-gitlab-jenkins-template
   title: Java App - GitLab + Jenkins
-  description: Crea un repository GitLab con app Java Spring Boot e Jenkinsfile
+  description: Crea un repository GitLab con app Java Spring Boot e catalog-info con annotation Jenkins
   tags:
     - java
     - gitlab
@@ -13,64 +13,72 @@ spec:
   type: service
 
   parameters:
-    - title: Informazioni progetto
+    - title: Project info
       required:
         - componentName
         - description
+        - owner
       properties:
         componentName:
-          title: Nome componente
+          title: Component name
           type: string
-          description: Nome del componente (sarà anche il nome del repo GitLab)
+          description: Nome componente (usato anche come artifactId)
           ui:autofocus: true
+          pattern: '^[a-z0-9-]+$'
+          ui:help: Usa solo minuscole, numeri e trattini
         description:
-          title: Descrizione
+          title: Description
           type: string
           description: Breve descrizione del progetto
+        owner:
+          title: Owner
+          type: string
+          description: Entity owner del componente Backstage (es. user:guest o group:default/team)
+          default: user:guest
         javaVersion:
-          title: Versione Java
+          title: Java version
           type: string
           default: "17"
           enum:
             - "17"
             - "21"
 
-    - title: Repository GitLab
+    - title: GitLab repository
       required:
         - repoUrl
       properties:
         repoUrl:
-          title: Repository GitLab
+          title: GitLab repository
           type: string
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
               - gitlab.com
 
-    - title: Configurazione Jenkins
+    - title: Jenkins
       required:
-        - jenkinsAgent
+        - jenkinsJobFullName
       properties:
-        jenkinsAgent:
-          title: Label agente Jenkins
+        jenkinsJobFullName:
+          title: Jenkins job full name
           type: string
-          default: jenkins-agent
-          description: Label del nodo Jenkins da usare nella pipeline
+          description: Nome job Jenkins (es. my-job oppure folder/my-job)
 
   steps:
     - id: fetch-base
-      name: Genera struttura progetto
+      name: Generate project
       action: fetch:template
       input:
         url: ./content
         values:
           componentName: ${{ parameters.componentName }}
           description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
           javaVersion: ${{ parameters.javaVersion }}
-          jenkinsAgent: ${{ parameters.jenkinsAgent }}
+          jenkinsJobFullName: ${{ parameters.jenkinsJobFullName }}
 
     - id: publish
-      name: Pubblica su GitLab
+      name: Publish to GitLab
       action: publish:gitlab
       input:
         description: ${{ parameters.description }}
@@ -79,7 +87,7 @@ spec:
         repoVisibility: private
 
     - id: register
-      name: Registra nel catalogo
+      name: Register in catalog
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
@@ -87,8 +95,8 @@ spec:
 
   output:
     links:
-      - title: Repository GitLab
+      - title: Repository
         url: ${{ steps['publish'].output.remoteUrl }}
-      - title: Apri nel catalogo
+      - title: Open in catalog
         icon: catalog
         entityRef: ${{ steps['register'].output.entityRef }}

@@ -1,5 +1,5 @@
 pipeline {
-    agent { label '${{ values.jenkinsAgent }}' }
+    agent any
 
     environment {
         APP_NAME = '${{ values.componentName | lower }}'
@@ -14,13 +14,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn -B -ntp clean package -DskipTests'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh 'mvn -B -ntp test'
             }
             post {
                 always {
