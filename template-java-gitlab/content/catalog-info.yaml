@@ -1,13 +1,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: ${{ values.componentName }}
+  name: ${{ values.componentName | lower }}
   description: ${{ values.description }}
   annotations:
-    gitlab.com/project-slug: ${{ values.repoUrl | parseRepoUrl | pick('owner') }}/${{ values.componentName }}
-    jenkins.io/job-full-name: ${{ values.componentName }}
+    jenkins.io/job-full-name: ${{ values.componentName | lower }}
 spec:
   type: service
   lifecycle: experimental
   owner: user:guest
-  language: ${{ values.language }}

@@ -12,13 +12,13 @@
   </parent>
 
   <groupId>com.example</groupId>
-  <artifactId>${{ values.componentName }}</artifactId>
+  <artifactId>${{ values.componentName | lower }}</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>${{ values.componentName }}</name>
   <description>${{ values.description }}</description>
 
   <properties>
-    <java.version>17</java.version>
+    <java.version>${{ values.javaVersion }}</java.version>
   </properties>
 
   <dependencies>

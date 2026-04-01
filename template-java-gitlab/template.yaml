@@ -3,12 +3,11 @@ kind: Template
 metadata:
   name: java-gitlab-jenkins-template
   title: Java App - GitLab + Jenkins
-  description: Crea un repository GitLab con un'app Java (Maven) e un Jenkinsfile pronto all'uso
+  description: Crea un repository GitLab con app Java Spring Boot e Jenkinsfile
   tags:
     - java
     - gitlab
     - jenkins
-    - maven
 spec:
   owner: user:guest
   type: service
@@ -18,57 +17,45 @@ spec:
       required:
         - componentName
         - description
-        - language
       properties:
         componentName:
           title: Nome componente
           type: string
-          description: Nome del componente (usato anche come nome del repo GitLab)
+          description: Nome del componente (sarà anche il nome del repo GitLab)
           ui:autofocus: true
         description:
           title: Descrizione
           type: string
           description: Breve descrizione del progetto
-        language:
-          title: Linguaggio di programmazione
+        javaVersion:
+          title: Versione Java
           type: string
-          description: Linguaggio principale del progetto
-          default: java
+          default: "17"
           enum:
-            - java
-          enumNames:
-            - Java (Maven)
+            - "17"
+            - "21"
 
     - title: Repository GitLab
       required:
         - repoUrl
       properties:
         repoUrl:
-          title: Posizione repository GitLab
+          title: Repository GitLab
           type: string
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
               - gitlab.com
-        defaultBranch:
-          title: Branch di default
-          type: string
-          default: main
 
     - title: Configurazione Jenkins
       required:
-        - jenkinsAgentLabel
+        - jenkinsAgent
       properties:
-        jenkinsAgentLabel:
+        jenkinsAgent:
           title: Label agente Jenkins
           type: string
           default: jenkins-agent
-          description: Label del nodo/agente Jenkins da usare nella pipeline
-        mavenGoals:
-          title: Maven goals
-          type: string
-          default: clean package
-          description: Goals Maven da eseguire nella fase di build
+          description: Label del nodo Jenkins da usare nella pipeline
 
   steps:
     - id: fetch-base
@@ -79,11 +66,8 @@ spec:
         values:
           componentName: ${{ parameters.componentName }}
           description: ${{ parameters.description }}
-          language: ${{ parameters.language }}
-          defaultBranch: ${{ parameters.defaultBranch | default("main") }}
-          jenkinsAgentLabel: ${{ parameters.jenkinsAgentLabel }}
-          mavenGoals: ${{ parameters.mavenGoals | default("clean package") }}
-          repoUrl: ${{ parameters.repoUrl }}
+          javaVersion: ${{ parameters.javaVersion }}
+          jenkinsAgent: ${{ parameters.jenkinsAgent }}
 
     - id: publish
       name: Pubblica su GitLab
@@ -91,7 +75,7 @@ spec:
       input:
         description: ${{ parameters.description }}
         repoUrl: ${{ parameters.repoUrl }}
-        defaultBranch: ${{ parameters.defaultBranch | default("main") }}
+        defaultBranch: main
         repoVisibility: private
 
     - id: register
@@ -99,7 +83,7 @@ spec:
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
+        catalogInfoPath: /catalog-info.yaml
 
   output:
     links:

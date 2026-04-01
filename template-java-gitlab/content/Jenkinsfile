@@ -1,11 +1,8 @@
 pipeline {
-    agent {
-        label '${{ values.jenkinsAgentLabel }}'
-    }
+    agent { label '${{ values.jenkinsAgent }}' }
 
     environment {
-        APP_NAME    = '${{ values.componentName }}'
-        MAVEN_OPTS  = '-Dmaven.repo.local=.m2/repository'
+        APP_NAME = '${{ values.componentName | lower }}'
     }
 
     stages {
@@ -17,7 +14,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn ${{ values.mavenGoals }} -DskipTests'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
@@ -32,20 +29,15 @@ pipeline {
             }
         }
 
-        stage('Package') {
+        stage('Archive') {
             steps {
-                sh 'mvn package -DskipTests'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
     }
 
     post {
-        success {
-            echo "Build di ${APP_NAME} completata con successo."
-        }
-        failure {
-            echo "Build di ${APP_NAME} fallita."
-        }
+        success { echo "Build ${APP_NAME} completata." }
+        failure { echo "Build ${APP_NAME} fallita." }
     }
 }
