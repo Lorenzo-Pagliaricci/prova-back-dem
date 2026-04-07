@@ -27,10 +27,6 @@ spec:
       required:
         - jenkinsGitCredentialsId
       properties:
-        jenkinsJobFullName:
-          title: Jenkins Job Full Name
-          type: string
-          description: Nome job Jenkins (supporta folder con /, es. cdm_pipeline/my-service/main)
         jenkinsGitCredentialsId:
           title: Jenkins Git Credentials ID
           type: string
@@ -60,7 +56,7 @@ spec:
         url: ./skeleton
         values:
           name: ${{ parameters.name }}
-          jenkinsJobFullName: ${{ parameters.jenkinsJobFullName | default(parameters.name) }}
+          jenkinsJobFullName: ${{ parameters.name }}-jenkinsJob
 
     - id: current-user
       name: Resolve GitLab user from token
@@ -81,7 +77,7 @@ spec:
       action: jenkins:create-pipeline
       input:
         repoUrl: ${{ steps['publish-gitlab'].output.remoteUrl }}
-        jenkinsJobFullName: ${{ parameters.jenkinsJobFullName | default(parameters.name) }}
+        jenkinsJobFullName: ${{ parameters.name }}-jenkinsJob
         gitBranch: ${{ parameters.jenkinsGitBranch | default('main') }}
         jenkinsfilePath: ${{ parameters.jenkinsfilePath | default('main.jenkinsfile') }}
         jenkinsGitCredentialsId: ${{ parameters.jenkinsGitCredentialsId }}
