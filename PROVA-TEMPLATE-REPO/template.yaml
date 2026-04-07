@@ -1,0 +1,64 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: adr-gitlab-repo-remote
+  title: Repository GitLab (Remote)
+  description: Crea una repository GitLab usando il token configurato nel backend Backstage e registra la nuova entity nel Catalog.
+  tags:
+    - gitlab
+    - repository
+    - remote-template
+spec:
+  owner: user:development/guest
+  type: service
+
+  parameters:
+    - title: Repository
+      required:
+        - name
+      properties:
+        name:
+          title: Repository Name
+          type: string
+          description: Nome repository (es. cdm-meteo-service)
+          pattern: '^[a-z0-9-]+$'
+          ui:autofocus: true
+
+  steps:
+    - id: fetch-base
+      name: Generate repository files
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+
+    - id: current-user
+      name: Resolve GitLab user from token
+      action: gitlab:user:info
+      input:
+        repoUrl: gitlab.com?owner=placeholder&repo=placeholder
+
+    - id: publish-gitlab
+      name: Create GitLab repository
+      action: publish:gitlab
+      input:
+        repoUrl: gitlab.com?owner=${{ steps['current-user'].output.username }}&repo=${{ parameters.name }}
+        defaultBranch: main
+        repoVisibility: private
+
+    - id: register-catalog
+      name: Register in catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish-gitlab'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repository GitLab
+        url: ${{ steps['publish-gitlab'].output.remoteUrl }}
+      - title: Repository Contents
+        url: ${{ steps['publish-gitlab'].output.repoContentsUrl }}
+      - title: Open in Catalog
+        entityRef: ${{ steps['register-catalog'].output.entityRef }}

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  description: Repository ${{ values.name }} created by Backstage
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:development/guest
