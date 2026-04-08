@@ -1,30 +1,19 @@
-# Update Guide
+# Update Project Docs
 
-## How to update documentation
+Per aggiornare la documentazione del progetto:
 
-1. Edit Markdown files under `docs/`.
-2. If needed, update navigation in `mkdocs.yml`.
-3. Commit and push changes to `main`.
+1. apri il repository GitLab;
+2. vai nella cartella `docs/`;
+3. modifica il file Markdown che vuoi aggiornare;
+4. fai commit e push.
 
-Example:
+Puoi usare direttamente l'URL del file da modificare in GitLab.
 
-```bash
-git add docs/ mkdocs.yml
-git commit -m "docs: update service documentation"
-git push origin main
-```
+Esempio:
 
-## Recommended structure
+`https://gitlab.com/<owner>/<repo>/-/blob/main/docs/index.md`
 
-- `docs/index.md`: service overview
-- `docs/api.md`: API details and examples
-- `docs/runbook.md`: operational procedures
-- `docs/adr.md`: architecture and key decisions
+## Note rapide
 
-## Documentation quality checklist
-
-- Owner and contacts are clearly stated
-- API behavior is documented
-- Dependencies and external systems are listed
-- Deployment and rollback notes are present
-- Last update date is visible
+- se cambi menu o pagine, aggiorna anche `mkdocs.yml`;
+- dopo il push, la pagina Docs in Backstage mostra il nuovo contenuto.

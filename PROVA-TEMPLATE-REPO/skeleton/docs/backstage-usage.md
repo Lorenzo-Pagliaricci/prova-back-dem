@@ -1,31 +1,28 @@
-# Backstage Usage
+# Create A New Template
 
-This service is automatically registered in Backstage by the template.
+Questa pagina descrive come registrare un template remoto in Backstage.
 
-## What you can see in Backstage
+## Dove registrarlo
 
-- `Overview`: component metadata and key cards
-- `GitLab`: repository data
-- `CI/CD`: Jenkins job builds and status
-- `Artifact`: Nexus repository information
-- `Docs`: documentation linked through `backstage.io/techdocs-ref`
+In Backstage vai su:
 
-## How Docs tab is enabled
+1. `Create`
+2. `Register Existing Component`
 
-The template writes this annotation in `catalog-info.yaml`:
+## URL da passare
 
-```yaml
-metadata:
-  annotations:
-    backstage.io/techdocs-ref: dir:.
-```
+Per registrare un template devi passare l'URL del file `template.yaml`.
 
-This tells Backstage to read docs from this repository (`mkdocs.yml` + `docs/`).
+Esempio:
 
-## Troubleshooting
+`https://github.com/backstage/backstage/blob/master/template.yaml`
 
-- If docs are not visible:
-  - check `catalog-info.yaml` annotation
-  - check that `mkdocs.yml` exists
-  - check that at least one page exists in `docs/`
-  - verify Backstage can reach your GitLab repository
+Nota:
+
+- `template.yaml` serve per i template;
+- `catalog-info.yaml` serve per registrare componenti gia esistenti.
+
+## Cosa succede dopo
+
+Dopo la registrazione il template compare nella pagina `Create` ed e pronto per
+il provisioning dei nuovi progetti.
